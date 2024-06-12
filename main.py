@@ -2,29 +2,26 @@ import pinyin
 import requests
 
 
-
+definition = ""
 uinput = ""
+charPinyin = ""
 def getPinyin():
-        # uinput = input("Input a character to get a pinyin and an image")
-        # uinput = "读"
-        # pinput = pinyin.get(uinput)
+        # 
         pinput = "running"
         print(pinput)
-def retrieve():
-     #url = "https://randomuser.me/api"
-     url = "http://ccdb.hemiola.com/characters/string/%E8%AF%BB?fields=kDefinition,kMandarin"
-     #url="http://ccdb.hemiola.com/characters"
-     print(url)
+def getCharInfo():
+     uinput = input("Input a character to get a pinyin and an image")
+     #uinput = "读"
+     url = "http://ccdb.hemiola.com/characters/string/"+uinput+"?fields=kDefinition,kMandarin"
      response = requests.get(url, headers={"User-Agent": "XY"})
-     print("CODE ", response.status_code)
-     print(response)
-     data = response.json()
-     print(data)
+     definition = response.json()[0]['kDefinition']
+     charPinyin = pinyin.get(uinput)
+     print("\nYour character", uinput, "is pronounced", charPinyin, "and means", definition, ". ")
 
    
 def main():
-    getPinyin()
-    retrieve()
+    getCharInfo()
+
 
 
 
