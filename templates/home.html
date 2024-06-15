@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>workign</title>
+    <style>
+    </style>
+</head>
+<body>
+    <h1>Input a Character</h1>
+    <form action="" method="post">
+        <label for="user_input">Input here</label>
+        <input type="text" id="user_input" name="user_input" required>
+        <button name="Submit">Submit</button>
+    </form>
+    <h2>
+        {% if result %}
+            <p id="result">{{ result }}</p>
+        {% endif %}
+
+    </h2>
+</body>
+</html>
