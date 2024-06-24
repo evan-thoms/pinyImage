@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 uinput = ""
 def contains_chinese_characters(s):
-    return re.search(r'[\u4e00-\u9fff]', s)
+    return re.search(r'[\u4e00-\u9fff]', s) 
 
 @app.route("/", methods=["POST", "GET"])
 def result():
