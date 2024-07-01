@@ -1,57 +1,51 @@
 from flask import Flask, request, render_template
-
+from connections import getConnections
 
 import pinyin
 import requests
 import re
-import json
+import json 
 
-app = Flask(__name__)
 
-uinput = ""
+app = Flask(__name__, static_folder='static')
+
+charinput = ""
+charPinyin = ""
+
 def contains_chinese_characters(s):
     return re.search(r'[\u4e00-\u9fff]', s) 
 
 @app.route("/", methods=["POST", "GET"])
 def result():
+    global charinput, charPinyin
     form_data= request.form.to_dict()
     if 'user_input' in form_data:
         uinput = request.form.to_dict()['user_input']
         if contains_chinese_characters(uinput):
                 result = getCharInfo(uinput)
+                connections = getConnections(charinput, charPinyin)
         else:
             result = "The input does not contain any Chinese characters."
+            connections = ""
         print(result)
-        return render_template('home.html', result = result)
+        return render_template('home.html', result = result, connections=connections)
     return render_template("home.html", result=None )
 
-
-def testreturn(uinput):
-     return uinput
-
-definition = ""
-
-charPinyin = ""
 def getCharInfo(uinput):
-     #uinput = input("Input a character to get a pinyin and an image")
-    #  uinput = "读"
+     global charinput, charPinyin
+     charinput=uinput
      url = "http://ccdb.hemiola.com/characters/string/"+uinput+"?fields=kDefinition,kMandarin,kRSKangXi"
      response = requests.get(url, headers={"User-Agent": "XY"})
      definition = response.json()[0]['kDefinition']
      radNum = response.json()[0]["kRSKangXi"]
-     print(response.json()[0])
-     print(response.json()[0], " response")
-     print("originial rad ", radNum)
      radNum = radNum.split('.')[0]
-     print(radNum, "sdf")
      charPinyin = pinyin.get(uinput)
      rad = getRads(radNum)
-     print(rad)
-     radChar = rad['radical']
+     radChar = rad['radical'].strip()
      english = rad['english']
      radNum = str(radNum)
      char  = "\nYour character "+uinput+ " is pronounced "+charPinyin+" and means "+definition+ ". "
-     rad = "\nYour character uses radical #"+radNum+": "+radChar+", which means "+english+". "
+     rad = "\nYour character uses radical #"+radNum+": "+radChar.strip()+", which means "+english+". "
      return char + rad
 def getRads(radNumC):
      print("current number ", radNumC)
@@ -70,9 +64,6 @@ def getRads(radNumC):
      return rad
      
 
-     
-
-
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=8080, debug=True)
-    # getCharInfo(3)
+    

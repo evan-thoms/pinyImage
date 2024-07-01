@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="templates/style.css"/>
+    <link rel="stylesheet" type="text/css" href="static/style.css"/>
     <title>PinyImage</title>
     <style>
     </style>
@@ -14,10 +14,13 @@
         <label for="user_input">Input here</label>
         <input type="text" id="user_input" name="user_input" required>
         <button name="Submit">Submit</button>
-    </form>
+    </form> 
     <h2>
         {% if result %}
             <p id="result">{{ result }}</p>
+        {% endif %}
+        {% if connections %}
+            <p id="connections">{{ connections }}</p>
         {% endif %}
 
     </h2>
