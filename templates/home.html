@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="static/style.css"/>
-    <title>PinyImage</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"/>
+    <title>{% block title %} {% endblock %}</title>
     <style>
     </style>
 </head>
@@ -22,10 +22,21 @@
         {% if connections %}
             <p id="connections">{{ connections }}</p>
         {% endif %}
-
     </h2>
+    <div class="cards">
+        {% for card in cards %}
+            <a href="#">
+                <h2>{{ card['title'] }}</h2>
+                
+            </a>
+            <span class="badge badge-primary">{{ card['created'] }}</span>
+            <hr>
+            {% endfor %}
+        </div>
 
     <p class="desc">
+        *For example purposes, the prompts generated are using a rudimentary free api. The cards below may provide more useful mental images, as they were generated with 
+
         To aid the speed and ease in memorizing anything, making as many unique connections in your mind is essential. Especially wiht a language like Chinese, where one can encounter hundreds of distinct characters in a single conversation that must me understood to accurately respond, being able to retrieve the meaning of the character from its appearance or sounds is paramount to becoming a conversational speaker. This tool helps to provide ideas for locking characters in memory using quick and easy association suggestions. 
     </p>
 </body>

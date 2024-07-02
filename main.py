@@ -5,7 +5,7 @@ import pinyin
 import requests
 import re
 import json 
-
+import sqlite3
 
 app = Flask(__name__, static_folder='static')
 
@@ -18,6 +18,9 @@ def contains_chinese_characters(s):
 @app.route("/", methods=["POST", "GET"])
 def result():
     global charinput, charPinyin
+    conn = getDbConnection()
+    cards = conn.execute('SELECT * from cards').fetchall()
+    conn.close()
     form_data= request.form.to_dict()
     if 'user_input' in form_data:
         uinput = request.form.to_dict()['user_input']
@@ -28,8 +31,8 @@ def result():
             result = "The input does not contain any Chinese characters."
             connections = ""
         print(result)
-        return render_template('home.html', result = result, connections=connections)
-    return render_template("home.html", result=None )
+        return render_template('home.html', result = result, connections=connections, cards=cards)
+    return render_template("home.html", result=None,  cards=cards)
 
 def getCharInfo(uinput):
      global charinput, charPinyin
@@ -62,6 +65,10 @@ def getRads(radNumC):
     # Debugging output to verify the correct item was found
      print("Found item:", rad)
      return rad
+def getDbConnection():
+    conn = sqlite3.connect("database.db")
+    conn.row_factory = sqlite3.Row
+    return conn
      
 
 if __name__ == "__main__":
