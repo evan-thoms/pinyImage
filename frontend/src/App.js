@@ -9,6 +9,8 @@ const App = () => {
   const  [cards, setCards] = useState([]);
   const [result, setResult] = useState('');
   const [connections, setConnections] = useState('');
+  console.log("JSDKLFJSDKLFKJ");
+
 
 
   useEffect(() => {
@@ -16,21 +18,23 @@ const App = () => {
   }, []);
 
   const fetchCards = async () => {
+    console.log("fetch cards")
     try {
       const response = await axios.get('/api/cards');
-    console.log("response of fetchCards: "+response);
-    setCards(response.data)
-    } catch (error){
-      console.error("error fecthing cards: ", error)
+      console.log("response of fetchCards: ", response);
+      setCards(response.data);
+    } catch (error) {
+      console.error("error fetching cards: ", error);
     }
-    
   };
 
   const handleSubmit = async (input) => {
     try {
+    console.log("hit submit button")
     const response = await axios.post('/api/result', { user_input: input });
+    console.log("response here: ",response);
     setResult(response.data.result);
-    setConnections(response.data.result);
+    setConnections(response.data.connections);
     setCards(response.data.cards);
   } catch (error) {
     console.error("Error submitting input: ", error);
