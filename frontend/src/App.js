@@ -1,21 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './App.css';
-import Navbar from './Navbar';
-import CardList from './CardList';
-import CardForm from './CardForm';
+import Navbar from './components/Navbar';
+import CardList from './components/CardList';
+import CardForm from './components/CardForm';
+import Search from './components/Search';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 const App = () => {
   const  [cards, setCards] = useState([]);
   const [result, setResult] = useState('');
   const [connections, setConnections] = useState('');
-  console.log("JSDKLFJSDKLFKJ");
+  const [filteredCards, setFilteredCards] = useState([])
 
-
-
+  
   useEffect(() => {
     fetchCards();
   }, []);
+  const searchFiltering = (searchTerm) => {
+    const filteredResult = cards.filter(card => 
+      card.pinyin.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchTerm.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")));
+      setFilteredCards(filteredResult);
+  };
 
   const fetchCards = async () => {
     console.log("fetch cards")
@@ -43,12 +51,14 @@ const App = () => {
   return (
     <div className="App">
       <Navbar />
-      <h1>PinyImage</h1>
+      
       <h3>Create meaningful mental images to help remember Mandarin characters!</h3>
-      <CardList cards={cards} />
+      
       <CardForm onSubmit={handleSubmit} />
       {result && <div>{result}</div>}
       {connections && <div>{connections}</div>}
+      <Search cards={cards} handleSearch={searchFiltering}></Search>
+      <CardList cards={filteredCards.length > 0 ? filteredCards : cards} />
     </div>
   );
 }

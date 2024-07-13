@@ -10,6 +10,7 @@ function CardForm({ onSubmit }) {
   };
 
   return (
+    <div>
     <form onSubmit={handleSubmit}>
       <label htmlFor="user_input">Input here</label>
       <input
@@ -22,6 +23,8 @@ function CardForm({ onSubmit }) {
       />
       <button type="submit">Submit</button>
     </form>
+    <p>Your response will appear below shortly</p>
+    </div>
   );
 }
 
