@@ -1,3 +1,11 @@
+<!-- connect react
+make cards
+style front page
+make search feature
+allow saving posts to db
+profile/login?
+ -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +17,23 @@
     </style>
 </head>
 <body>
-    <h1>Input a Character</h1>
+    <p class="navbar">PinyImage           Card Search            About </p>
+    <h1>PinyImage</h1>
+    <h3>Create meaningful mental images to help remember Mandarin characters!</h3>
+    <h5 style="border: 2px solid black; margin:0px; margin-bottom:-10px">Examples:</h5>
+    <p> *For example purposes, the pinyImage uses a rudimentary free api. The example cards below may provide more useful mental images, as they were generated with ChatGPT</p>
+    <div class="cards">
+        {% for card in cards %}
+            <a href="#">
+                <h2>{{ card['title'] }}</h2>
+                <h4> {{ card['pinyin'] }}</h4>
+                <p> {{ card['content']}}</p>
+            </a>
+            <span class="badge badge-primary">{{ card['created'] }}</span>
+            <hr>
+            {% endfor %}
+        </div>
+    <h3>Create a Card for Yourself</h3>
     <form action="" method="post">
         <label for="user_input">Input here</label>
         <input type="text" id="user_input" name="user_input" required>
@@ -23,20 +47,10 @@
             <p id="connections">{{ connections }}</p>
         {% endif %}
     </h2>
-    <div class="cards">
-        {% for card in cards %}
-            <a href="#">
-                <h2>{{ card['title'] }}</h2>
-                
-            </a>
-            <span class="badge badge-primary">{{ card['created'] }}</span>
-            <hr>
-            {% endfor %}
-        </div>
-
+    <p>Your Cards</p>
+    
+    
     <p class="desc">
-        *For example purposes, the prompts generated are using a rudimentary free api. The cards below may provide more useful mental images, as they were generated with 
-
         To aid the speed and ease in memorizing anything, making as many unique connections in your mind is essential. Especially wiht a language like Chinese, where one can encounter hundreds of distinct characters in a single conversation that must me understood to accurately respond, being able to retrieve the meaning of the character from its appearance or sounds is paramount to becoming a conversational speaker. This tool helps to provide ideas for locking characters in memory using quick and easy association suggestions. 
     </p>
 </body>

@@ -1,13 +1,14 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, send_from_directory, jsonify
 from connections import getConnections
-
+from werkzeug.exceptions import abort
 import pinyin
 import requests
 import re
 import json 
 import sqlite3
+import os
 
-app = Flask(__name__, static_folder='static')
+app = Flask(__name__, static_folder='../frontend/build', static_url_path='')
 
 charinput = ""
 charPinyin = ""
@@ -15,14 +16,14 @@ charPinyin = ""
 def contains_chinese_characters(s):
     return re.search(r'[\u4e00-\u9fff]', s) 
 
-@app.route("/", methods=["POST", "GET"])
+@app.route("/api/result", methods=["POST", "GET"])
 def result():
     global charinput, charPinyin
     conn = getDbConnection()
     cards = conn.execute('SELECT * from cards').fetchall()
     conn.close()
-    form_data= request.form.to_dict()
-    if 'user_input' in form_data:
+    formData= request.form.to_dict()
+    if 'user_input' in formData:
         uinput = request.form.to_dict()['user_input']
         if contains_chinese_characters(uinput):
                 result = getCharInfo(uinput)
@@ -31,8 +32,23 @@ def result():
             result = "The input does not contain any Chinese characters."
             connections = ""
         print(result)
-        return render_template('home.html', result = result, connections=connections, cards=cards)
-    return render_template("home.html", result=None,  cards=cards)
+        return jsonify(result = result, connections=connections, cards=[dict(card) for card in cards])
+    return jsonify( result=None,  cards=[dict(card) for card in cards])
+
+@app.route('/api/cards')
+def apiCards():
+    conn = getDbConnection()
+    cards = conn.execute('SELECT * from cards').fetchall()
+    conn.close()
+    return jsonify([dict(card) for card in cards])
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve(path):
+    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
 
 def getCharInfo(uinput):
      global charinput, charPinyin
@@ -69,8 +85,15 @@ def getDbConnection():
     conn = sqlite3.connect("database.db")
     conn.row_factory = sqlite3.Row
     return conn
+def get_card(card_id):
+    conn = getDbConnection()
+    card = conn.execute('SELECT * FROM cards WHERE id = ?', (card_id)).fetchone()
+    conn.close()
+    if card is None:
+        abort(404)
+    return card
      
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=8080, debug=True)
+    app.run(host="127.0.0.1", port=5000, debug=True)
     

@@ -1,0 +1,20 @@
+.cards {
+    display: inline-flex;
+    border: 1px solid #ccc;
+    padding: 16px;
+    margin: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+h1 {
+    font-size: 40px;
+    align-content: center;
+    color: rgb(35, 87, 135);
+    text-align: center;
+}
+.navbar {
+    border: 2px solid black;
+    padding: 8px;
+    margin: -10px;
+}
