@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../App.css'
 
 const Search = ({ handleSearch }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -9,17 +10,18 @@ const Search = ({ handleSearch }) => {
   };
 
   return (
-    <div className="d-flex justify-content-center">
-      <div >
-        <h2>
-          Search for Cards Here
-          </h2>
+    <div className=" d-flex justify-content-center">
+      <div class='searchtext' >
+       
+          Search for Cards Here:
+     
       </div>
       
       <input
         type="text"
-        placeholder="Search by Character Pinyin"
+        placeholder="Search by Pinyin"
         value={searchTerm}
+        class = 'search'
         onChange={handleChange}
         />
     </div>

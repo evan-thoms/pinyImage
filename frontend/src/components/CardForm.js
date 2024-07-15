@@ -23,7 +23,7 @@ function CardForm({ onSubmit }) {
       />
       <button type="submit">Submit</button>
     </form>
-    <p>Your response will appear below shortly</p>
+    
     </div>
   );
 }

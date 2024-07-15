@@ -1,0 +1,17 @@
+.grid {
+    display: flex;
+    margin-right: 10px;
+    margin-left: -15px; /* gutter size offset */
+    width: auto;
+  }
+  
+  .grid-sizer,
+  .grid-item {
+    width: 25%; /* Adjust based on the number of columns */
+  }
+  
+  .grid-item {
+    padding-bottom: -50px;
+    margin-bottom: -10px; /* gutter size */
+    padding-left: 30px; /* gutter size */
+  }
