@@ -15,7 +15,9 @@ const App = () => {
   const  [cards, setCards] = useState([]);
   const [result, setResult] = useState('');
   const [connections, setConnections] = useState('');
-  const [filteredCards, setFilteredCards] = useState([])
+  const [filteredCards, setFilteredCards] = useState([]);
+  const [curCard, setCurCard] = useState({ title:"", pinyin:"", meaning:"", con:""});
+
   useEffect(() => {
     $('[data-tilt]').tilt({
       maxTilt: 15,
@@ -52,14 +54,7 @@ const App = () => {
       console.error("error fetching cards: ", error);
     }
   };
-  const addToDb = async (card) => {
-    try {
-      console.log("adding to db");
-      
-    } catch {
-
-    }
-  }
+  
   const removeDuplicates = (cards) => {
     const uniqueCards = cards.filter((card, index, self) => 
       index === self.findIndex((c) => (
@@ -75,25 +70,47 @@ const App = () => {
     try {
     console.log("hit submit button")
     const response = await axios.post('/api/result', { user_input: input });
-    console.log("response here: ",response);
+    console.log("response here, ", response)
     setResult(response.data.result);
     setConnections(response.data.connections);
     setCards(removeDuplicates(response.data.cards));
+    setCurCard({
+      title: input, 
+      pinyin: response.data.pinyin,
+      meaning: response.data.meaning,
+      con: response.data.connections,
+    })
   } catch (error) {
     console.error("Error submitting input: ", error);
   }
   };
+
+  const addToDatabase = async (card) => {
+    try {
+      console.log("adding to db");
+      const response = await axios.post('/api/post', curCard);
+      console.log("response of addtodb: ", response);
+
+      fetchCards();
+
+    } catch (error) {
+      console.error("Error adding to db: ", error);
+    }
+  };
+
   return (
     <div className="App">
     
       <Navbar />
-      <h3>Create meaningful menal images to help remember Mandarin characters!</h3>
+      <h3>Create meaningful mental images to help remember Mandarin characters!</h3>
       
       < CardForm onSubmit={handleSubmit} />
+
       {result ? <div>{result}</div>: <div><p>Your response will appear below shortly</p></div>}
       {connections && <div>
         {connections}
         <p>Save this response?</p>
+        <button onClick={addToDatabase}>Save</button>
         </div>}
       <Search cards={cards} handleSearch={searchFiltering}></Search>
       <CardList cards={filteredCards.length > 0 ? filteredCards : cards} />
