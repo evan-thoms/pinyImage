@@ -10,7 +10,7 @@ const Search = ({ handleSearch }) => {
   };
 
   return (
-    <div className=" d-flex justify-content-center">
+    <div class="cardSearch">
       <div class='searchtext' >
        
           Search for Cards Here:

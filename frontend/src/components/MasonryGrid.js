@@ -12,13 +12,23 @@ const MasonryGrid = ({ children }) => {
             itemSelector: '.grid-item',
             columnWidth: '.grid-sizer',
             percentPosition: true,
+            horizontalOrder: true,
         });
 
         imagesLoaded(grid, () => {
             masonry.layout();
         });
 
-        return () => masonry.destroy();
+        const handleResize = () => {
+            masonry.layout();
+          };
+      
+          window.addEventListener('resize', handleResize);
+
+        return () => {
+            masonry.destroy();
+            window.removeEventListener('resize', handleResize);
+        };
     }, [children]);
 
     return (

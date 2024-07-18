@@ -17,6 +17,9 @@ const App = () => {
   const [connections, setConnections] = useState('');
   const [filteredCards, setFilteredCards] = useState([]);
   const [curCard, setCurCard] = useState({ title:"", pinyin:"", meaning:"", con:""});
+  const [loading, setLoading] = useState(false);
+  const [saved, setSaved] = useState(false);
+
 
   useEffect(() => {
     $('[data-tilt]').tilt({
@@ -67,6 +70,10 @@ const App = () => {
 
 
   const handleSubmit = async (input) => {
+    setLoading(true);
+    setSaved(false);
+
+    setResult("");
     try {
     console.log("hit submit button")
     const response = await axios.post('/api/result', { user_input: input });
@@ -77,11 +84,13 @@ const App = () => {
     setCurCard({
       title: input, 
       pinyin: response.data.pinyin,
-      meaning: response.data.meaning,
+      meaning: "means "+response.data.meaning,
       con: response.data.connections,
     })
   } catch (error) {
     console.error("Error submitting input: ", error);
+  }finally {
+    setLoading(false); 
   }
   };
 
@@ -92,7 +101,7 @@ const App = () => {
       console.log("response of addtodb: ", response);
 
       fetchCards();
-
+      setSaved(true);
     } catch (error) {
       console.error("Error adding to db: ", error);
     }
@@ -102,18 +111,47 @@ const App = () => {
     <div className="App">
     
       <Navbar />
-      <h3>Create meaningful mental images to help remember Mandarin characters!</h3>
+      <h3 class="intro">Create meaningful mental images to remember Mandarin characters forever!</h3>
       
-      < CardForm onSubmit={handleSubmit} />
+      < CardForm class="cardForm" onSubmit={handleSubmit} />
 
-      {result ? <div>{result}</div>: <div><p>Your response will appear below shortly</p></div>}
-      {connections && <div>
-        {connections}
-        <p>Save this response?</p>
-        <button onClick={addToDatabase}>Save</button>
-        </div>}
+      {loading ? (
+      <div class = 'dots'>
+
+        <div></div>
+        <div></div>
+        <div></div>
+
+      </div>) : (
+        <>
+          {result ? <div class = "response">{result}</div> : <div class="shortly"><p>Your response will appear below shortly</p></div>}
+
+          {connections && (
+            <div>
+              <br></br>
+              <div class="response">{connections}</div>
+              <div class="save">
+               Save this response?
+               {saved ? <button class="saveButton">Saved!</button>: <button class="saveButton" onClick={addToDatabase}>Save to Cards</button>}
+                
+              </div>
+            </div>
+          )}
+        </>
+      )
+      
+    }
+     
       <Search cards={cards} handleSearch={searchFiltering}></Search>
       <CardList cards={filteredCards.length > 0 ? filteredCards : cards} />
+      <div class="line"></div>
+      <div class ="about">
+        <div class="aboutTitle">What is PinyImage?</div>
+        <div class = "description">
+          One of the most important parts of language learning is being able to remmember massive amounts of words and phrases, and especially with a system like Mandarin where characters give few clues to their meaning, the ability to recall their sound and function becomes essential. 
+          <br></br><br></br>PinyImage leverages your brain's natural ability to recall visual information to enhance and speed up character memorization. Tying character appearance to its meaning and sound using a mental image with familiar objects and feelings will store a character more strongly in your mind, ultimately leading to a better mastery of the Chinese langauge! 
+        </div>
+      </div>
     </div>
   );
 }

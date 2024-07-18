@@ -5,7 +5,9 @@ import '../App.css';
 
 const CardList = ({ cards }) => {
   return (
-    <MasonryGrid>
+    <MasonryGrid options={{
+      fitWidth: true, horizontalOrder: true
+   }}>
       {cards.map((card, index) => (
         <div key={index} className="grid-item">
           <Card {...card} />

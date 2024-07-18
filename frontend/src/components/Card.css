@@ -10,3 +10,13 @@
     font-size: 14px;
 
 }
+.meaning{
+    text-align: right;
+}
+.top{
+    display:flex;
+}
+.char{
+    flex: 2;
+
+}
