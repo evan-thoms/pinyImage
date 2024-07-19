@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import './App.css';
 import Navbar from './components/Navbar';
@@ -8,6 +8,8 @@ import Search from './components/Search';
 import $ from 'jquery';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'tilt.js';
+import { BrowserRouter as Router } from 'react-router-dom';
+
 
 
 
@@ -20,6 +22,10 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  const aboutRef = useRef(null);
+  const searchRef = useRef(null);
+
+  
 
   useEffect(() => {
     $('[data-tilt]').tilt({
@@ -45,6 +51,10 @@ const App = () => {
       setFilteredCards(filteredResult);
   };
   
+  const handleScroll = (ref) => {
+    ref.current.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const fetchCards = async () => {
     console.log("fetch cards")
     try {
@@ -108,51 +118,54 @@ const App = () => {
   };
 
   return (
-    <div className="App">
-    
-      <Navbar />
-      <h3 class="intro">Create meaningful mental images to remember Mandarin characters forever!</h3>
+    <Router>
+      <div className="App">
       
-      < CardForm class="cardForm" onSubmit={handleSubmit} />
+        <Navbar onClick={handleScroll} aboutRef={aboutRef} searchRef={searchRef}/>
+        <h3 class="intro">Create meaningful mental images to remember Mandarin characters forever!</h3>
+        < CardForm class="cardForm" onSubmit={handleSubmit} />
 
-      {loading ? (
-      <div class = 'dots'>
+        {loading ? (
+        <div class = 'dots'>
 
-        <div></div>
-        <div></div>
-        <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
 
-      </div>) : (
-        <>
-          {result ? <div class = "response">{result}</div> : <div class="shortly"><p>Your response will appear below shortly</p></div>}
+        </div>) : (
+          <div class="output">
+            {result ? <div class = "response">{result}</div> : <div class="shortly"><p>Your response will appear below shortly</p></div>}
 
-          {connections && (
-            <div>
-              <br></br>
-              <div class="response">{connections}</div>
-              <div class="save">
-               Save this response?
-               {saved ? <button class="saveButton">Saved!</button>: <button class="saveButton" onClick={addToDatabase}>Save to Cards</button>}
-                
+            {connections && (
+              <div>
+                <br></br>
+                <div class="response">{connections}</div>
+                <div class="save">
+                Save this response?
+                {saved ? <button class="saveButton">Saved!</button>: <button class="saveButton" onClick={addToDatabase}>Save to Cards</button>}
+                  
+                </div>
               </div>
-            </div>
-          )}
-        </>
-      )
-      
-    }
-     
-      <Search cards={cards} handleSearch={searchFiltering}></Search>
-      <CardList cards={filteredCards.length > 0 ? filteredCards : cards} />
-      <div class="line"></div>
-      <div class ="about">
-        <div class="aboutTitle">What is PinyImage?</div>
-        <div class = "description">
-          One of the most important parts of language learning is being able to remmember massive amounts of words and phrases, and especially with a system like Mandarin where characters give few clues to their meaning, the ability to recall their sound and function becomes essential. 
-          <br></br><br></br>PinyImage leverages your brain's natural ability to recall visual information to enhance and speed up character memorization. Tying character appearance to its meaning and sound using a mental image with familiar objects and feelings will store a character more strongly in your mind, ultimately leading to a better mastery of the Chinese langauge! 
+            )}
+          </div>
+        )
+        
+      }
+        <div ref = {searchRef}>
+          <Search cards={cards} handleSearch={searchFiltering}></Search>
         </div>
+        <CardList cards={filteredCards.length > 0 ? filteredCards : cards} />
+        <div className="line"></div>
+        <div className="about" ref={aboutRef}>
+          <div class="aboutTitle">What is PinyImage?</div>
+          <div class = "description">
+            One of the most important parts of language learning is being able to remmember massive amounts of words and phrases, and especially with a system like Mandarin where characters give few clues to their meaning, the ability to recall their sound and function becomes essential. 
+            <br></br><br></br>PinyImage leverages your brain's natural ability to recall visual information to enhance and speed up character memorization. Tying character appearance to its meaning and sound using a mental image with familiar objects and feelings will store a character more strongly in your mind, ultimately leading to a better mastery of the Chinese langauge! 
+          </div>
+        </div>
+        <div className="endBlock"></div>
       </div>
-    </div>
+    </Router>
   );
 }
 export default App;

@@ -41,6 +41,9 @@
 .shortly{
     display: block;
     text-align: center;
+    padding-bottom: 25px;
+    margin-top: -10px;
+
 }
 .submitButton{
     background-color: #b1b9c6;
@@ -55,7 +58,7 @@
     display:flex;
     justify-content: center;
     padding-top: 15px;
-    padding-bottom: 15px;
+    padding-bottom: 0px;
 }
 
 .cards{
@@ -185,6 +188,19 @@
 .line{
     margin: 40px;
     background-color: #828fa1;
-    height: 7px;
+    height: 4px;
     border-radius: 50px;
+}
+.output {
+    margin-top: 20px;
+}
+.cursor {
+    cursor:pointer;
+}
+
+
+.endBlock{
+    padding-top:40px;
+    margin-top:20px;
+    background-color: #212529;
 }

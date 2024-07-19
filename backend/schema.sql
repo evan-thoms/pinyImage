@@ -6,5 +6,6 @@ CREATE TABLE cards (
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     title TEXT NOT NULL,
     pinyin TEXT NOT NULL,
-    content TEXT NOT NULL
+    meaning TEXT NOT NULL,
+    con TEXT NOT NULL
 );
