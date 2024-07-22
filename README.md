@@ -53,7 +53,6 @@
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
@@ -67,14 +66,9 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-a
 One of the most important parts of language learning is being able to remember massive amounts of words and phrases, and especially with a system like Mandarin where characters give few clues to their meaning, the ability to recall their sound and function becomes essential.
 
 PinyImage leverages your brain's natural ability to recall visual information to enhance and speed up character memorization. Tying character appearance to its meaning and sound using a mental image with familiar objects and feelings will store a character more strongly in your mind, ultimately leading to a better mastery of the Chinese language!
-
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `evan-thoms`, `pinyImage`, `twitter_handle`, `linkedin_username`, `evanthoms@outlook.com_client`, `evanthoms@outlook.com`, `PinyImage`, `project_description`
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -82,7 +76,7 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 
 ### Built With
 
-* [![React][React.js]][React-url]
+* React
 * [![Bootstrap][Bootstrap.com]][Bootstrap-url]
 * [![JQuery][JQuery.com][JQuery-url]
 
@@ -116,7 +110,19 @@ To get a local copy up and running follow these simple example steps.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-After saving a desired response, a card holding your new mental connection will appear in your list below.
+1. Start the backend server after navigating to the "backend" folder
+   ```sh
+   python main.py
+   ```
+2. Open a new terminal tab and navigate to the "frontend" folder
+3. Start the React frontend
+   ```sh
+   npm start
+   ```
+4. Open the browser, and navigate to http://localhost:3000.
+5. Import a Mandarin character and review the response
+6. After saving a desired response, a card holding your new mental connection will appear in your list below.
+7. Use the search functionality to filter the cards.
 <img width="355" alt="image" src="https://github.com/user-attachments/assets/c503ecff-a9b1-4403-873c-a26e98cab5c3">
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -137,7 +143,11 @@ If you have a suggestion that would make this better, please fork the repo and c
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## License
 
+Distributed under the MIT License. See `LICENSE.txt` for more information.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTACT -->
 ## Contact
