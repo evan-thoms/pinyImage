@@ -30,10 +30,6 @@
   <p align="center">
     Create meaningful mental images to remember Mandarin characters forever!
     <br />
-    <a href="(https://github.com/evan-thoms/pinyImage)"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="(https://github.com/evan-thoms/pinyImage)">View Demo</a>
     
   </p>
 </div>
@@ -77,8 +73,12 @@ PinyImage leverages your brain's natural ability to recall visual information to
 ### Built With
 
 * React
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-* [![JQuery][JQuery.com][JQuery-url]
+* Node.js
+* Bootstrap
+* Masonry layout
+* SQLite
+* tilt.js
+* Cohere AI api
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -86,10 +86,6 @@ PinyImage leverages your brain's natural ability to recall visual information to
 
 <!-- GETTING STARTED -->
 ## Getting Started
-
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
 
 ### Installation
 
@@ -101,7 +97,6 @@ To get a local copy up and running follow these simple example steps.
    ```sh
    npm install
    ```
-3. 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -122,7 +117,7 @@ To get a local copy up and running follow these simple example steps.
 4. Open the browser, and navigate to http://localhost:3000.
 5. Import a Mandarin character and review the response
 6. After saving a desired response, a card holding your new mental connection will appear in your list below.
-7. Use the search functionality to filter the cards.
+7. Use the search functionality to filter through the cards.
 <img width="355" alt="image" src="https://github.com/user-attachments/assets/c503ecff-a9b1-4403-873c-a26e98cab5c3">
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -160,22 +155,6 @@ Project Link: [https://github.com/evan-thoms/pinyImage](https://github.com/evan-
 
 
 
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/evan-thoms
-[product-screenshot]: images/screenshot.png
-[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
-[Next-url]: https://nextjs.org/
-[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
-[React-url]: https://reactjs.org/
-[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
-[Vue-url]: https://vuejs.org/
-[Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
-[Angular-url]: https://angular.io/
-[Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
-[Svelte-url]: https://svelte.dev/
-[Laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white
 [Laravel-url]: https://laravel.com
 [Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
 [Bootstrap-url]: https://getbootstrap.com
