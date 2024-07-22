@@ -20,7 +20,7 @@
 <!--
 <br />
 <div align="center">
-  <a href="https://github.com/github_username/repo_name">
+  <a href="https://github.com/evan-thoms/pinyImage">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
   -->
@@ -70,11 +70,11 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 a
-One of the most important parts of language learning is being able to remmember massive amounts of words and phrases, and especially with a system like Mandarin where characters give few clues to their meaning, the ability to recall their sound and function becomes essential.
+One of the most important parts of language learning is being able to remember massive amounts of words and phrases, and especially with a system like Mandarin where characters give few clues to their meaning, the ability to recall their sound and function becomes essential.
 
-PinyImage leverages your brain's natural ability to recall visual information to enhance and speed up character memorization. Tying character appearance to its meaning and sound using a mental image with familiar objects and feelings will store a character more strongly in your mind, ultimately leading to a better mastery of the Chinese langauge!
+PinyImage leverages your brain's natural ability to recall visual information to enhance and speed up character memorization. Tying character appearance to its meaning and sound using a mental image with familiar objects and feelings will store a character more strongly in your mind, ultimately leading to a better mastery of the Chinese language!
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
+Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `evan-thoms`, `pinyImage`, `twitter_handle`, `linkedin_username`, `evanthoms@outlook.com_client`, `evanthoms@outlook.com`, `PinyImage`, `project_description`
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -85,7 +85,7 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 * [![React][React.js]][React-url]
 * [![Bootstrap][Bootstrap.com]][Bootstrap-url]
 * [![JQuery][JQuery.com]][JQuery-url]
-* * [![SQLite][https://www.sqlite.org/]][JQuery-url]
+* * [![SQLite][sqlite.org/]][JQuery-url]
 * 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -111,7 +111,7 @@ This is an example of how to list things you need to use the software and how to
 1. Get a free API Key at [https://example.com](https://example.com)
 2. Clone the repo
    ```sh
-   git clone https://github.com/github_username/repo_name.git
+   git clone https://github.com/evan-thoms/pinyImage.git
    ```
 3. Install NPM packages
    ```sh
@@ -146,7 +146,7 @@ Use this space to show useful examples of how a project can be used. Additional 
 - [ ] Feature 3
     - [ ] Nested Feature
 
-See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/evan-thoms/pinyImage/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -173,9 +173,9 @@ Don't forget to give the project a star! Thanks again!
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
+Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - evanthoms@outlook.com@evanthoms@outlook.com_client.com
 
-Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
+Project Link: [https://github.com/evan-thoms/pinyImage](https://github.com/evan-thoms/pinyImage)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
