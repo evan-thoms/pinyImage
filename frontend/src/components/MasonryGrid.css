@@ -9,33 +9,33 @@
   
   .grid-sizer,
   .grid-item {
-    width: 25%; /* Adjust based on the number of columns */
+    width: 25%; 
   }
   
   .grid-item {
     padding-bottom: 10px;
-    margin-bottom: -20px; /* gutter size */
-    padding-left: 30px; /* gutter size */
+    margin-bottom: -20px; 
+    padding-left: 30px; 
   }
   @media (max-width: 992px) {
     .grid-sizer,
     .grid-item {
-      width: 33.33%; /* 3 columns */
+      width: 33.33%; 
     }
   }
   
-  /* Small screens (phones) */
+
   @media (max-width: 768px) {
     .grid-sizer,
     .grid-item {
-      width: 50%; /* 2 columns */
+      width: 50%; 
     }
   }
   
-  /* Extra small screens (small phones) */
+
   @media (max-width: 576px) {
     .grid-sizer,
     .grid-item {
-      width: 100%; /* 1 column */
+      width: 100%;
     }
   }

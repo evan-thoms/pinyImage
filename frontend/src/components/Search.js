@@ -28,7 +28,4 @@ const Search = ({ handleSearch }) => {
   );
 };
 
-export default Search;
-
-
-// *For example purposes, the pinyImage uses a rudimentary free api. The example cards below may provide more useful mental images, as they were generated with ChatGPT
+export default Search; 

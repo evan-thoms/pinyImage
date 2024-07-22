@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, send_from_directory, jsonify
+from flask import Flask, request, send_from_directory, jsonify
 from connections import getConnections
 from werkzeug.exceptions import abort
 import pinyin
@@ -7,7 +7,6 @@ import re
 import json 
 import sqlite3
 import os
-import sqlite3
 import initdb
 
 initdb.init_db()
@@ -106,10 +105,12 @@ def getRads(radNumC):
             break
      print("Found item:", rad)
      return rad
+
 def getDbConnection():
     conn = sqlite3.connect("database.db")
     conn.row_factory = sqlite3.Row
     return conn
+
 def get_card(card_id):
     conn = getDbConnection()
     card = conn.execute('SELECT * FROM cards WHERE id = ?', (card_id)).fetchone()

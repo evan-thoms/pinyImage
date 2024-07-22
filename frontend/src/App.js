@@ -159,8 +159,8 @@ const App = () => {
         <div className="about" ref={aboutRef}>
           <div class="aboutTitle">What is PinyImage?</div>
           <div class = "description">
-            One of the most important parts of language learning is being able to remmember massive amounts of words and phrases, and especially with a system like Mandarin where characters give few clues to their meaning, the ability to recall their sound and function becomes essential. 
-            <br></br><br></br>PinyImage leverages your brain's natural ability to recall visual information to enhance and speed up character memorization. Tying character appearance to its meaning and sound using a mental image with familiar objects and feelings will store a character more strongly in your mind, ultimately leading to a better mastery of the Chinese langauge! 
+            One of the most important parts of language learning is being able to remember massive amounts of words and phrases, and especially with a system like Mandarin where characters give few clues to their meaning, the ability to recall their sound and function becomes essential. 
+            <br></br><br></br>PinyImage leverages your brain's natural ability to recall visual information to enhance and speed up character memorization. Tying character appearance to its meaning and sound using a mental image with familiar objects and feelings will store a character more strongly in your mind, ultimately leading to a better mastery of the Chinese language! 
           </div>
         </div>
         <div className="endBlock"></div>
