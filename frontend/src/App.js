@@ -10,9 +10,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'tilt.js';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-
-
-
 const App = () => {
   const  [cards, setCards] = useState([]);
   const [result, setResult] = useState('');
@@ -24,8 +21,6 @@ const App = () => {
 
   const aboutRef = useRef(null);
   const searchRef = useRef(null);
-
-  
 
   useEffect(() => {
     $('[data-tilt]').tilt({
@@ -77,8 +72,7 @@ const App = () => {
 
     return uniqueCards;
   };
-
-
+  
   const handleSubmit = async (input) => {
     setLoading(true);
     setSaved(false);
