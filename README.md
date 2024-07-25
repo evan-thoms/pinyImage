@@ -12,10 +12,6 @@
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
-
-
 <!-- PROJECT LOGO -->
 <!--
 <br />
@@ -78,7 +74,7 @@ PinyImage leverages your brain's natural ability to recall visual information to
 * Masonry layout
 * SQLite
 * tilt.js
-* Cohere AI api
+* Cohere AI API
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -118,7 +114,6 @@ PinyImage leverages your brain's natural ability to recall visual information to
 5. Import a Mandarin character and review the response
 6. After saving a desired response, a card holding your new mental connection will appear in your list below.
 7. Use the search functionality to filter through the cards.
-<img width="355" alt="image" src="https://github.com/user-attachments/assets/c503ecff-a9b1-4403-873c-a26e98cab5c3">
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -147,7 +142,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Evan Thoms - evanthoms@outlook.com@evanthoms@outlook.com_client.com
+Evan Thoms - evanthoms@outlook.com
 
 Project Link: [https://github.com/evan-thoms/pinyImage](https://github.com/evan-thoms/pinyImage)
 
