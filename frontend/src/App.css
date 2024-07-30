@@ -39,12 +39,13 @@
     margin-right: 7px;
 }
 .shortly{
-    display: block;
+
     text-align: center;
     padding-bottom: 25px;
-    margin-top: -10px;
+    margin-top: 10px;
 
 }
+
 .submitButton{
     background-color: #b1b9c6;
     border-radius: 4px;
