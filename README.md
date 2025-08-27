@@ -88,9 +88,28 @@ PinyImage leverages your brain's natural ability to recall visual information to
 1. Clone the repo
    ```sh
    git clone https://github.com/evan-thoms/pinyImage.git
+   cd pinyImage
    ```
-2. Install NPM packages
+
+2. Backend Setup
    ```sh
+   cd backend
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+3. Environment Configuration
+   ```sh
+   # Copy the example environment file
+   cp env.example .env
+   # Edit .env and add your API keys
+   # Choose either COHERE_API_KEY or OPENAI_API_KEY
+   ```
+
+4. Frontend Setup
+   ```sh
+   cd ../frontend
    npm install
    ```
 
@@ -101,19 +120,58 @@ PinyImage leverages your brain's natural ability to recall visual information to
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-1. Start the backend server after navigating to the "backend" folder
+### Local Development
+
+1. Start the backend server
    ```sh
+   cd backend
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
    python main.py
    ```
-2. Open a new terminal tab and navigate to the "frontend" folder
-3. Start the React frontend
+
+2. Start the React frontend (in a new terminal)
    ```sh
+   cd frontend
    npm start
    ```
-4. Open the browser, and navigate to http://localhost:3000.
-5. Import a Mandarin character and review the response
-6. After saving a desired response, a card holding your new mental connection will appear in your list below.
-7. Use the search functionality to filter through the cards.
+
+3. Open your browser and navigate to http://localhost:3000
+
+4. Input a Mandarin character and review the AI-generated mnemonic
+5. Save desired responses to create study cards
+6. Use the search functionality to filter through your saved cards
+
+### Deployment
+
+#### Option 1: Render (Recommended - Free)
+1. Fork this repository
+2. Connect your fork to [Render](https://render.com/)
+3. Create a new Web Service
+4. Add environment variables in Render dashboard:
+   - `COHERE_API_KEY` or `OPENAI_API_KEY`
+   - `FLASK_ENV=production`
+5. Deploy automatically
+
+#### Option 2: Heroku
+1. Install Heroku CLI
+2. Create a new Heroku app
+3. Add environment variables:
+   ```sh
+   heroku config:set COHERE_API_KEY=your_key_here
+   heroku config:set FLASK_ENV=production
+   ```
+4. Deploy:
+   ```sh
+   git push heroku main
+   ```
+
+### Testing
+
+Run the API tests:
+```sh
+cd backend
+python test_api.py
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
