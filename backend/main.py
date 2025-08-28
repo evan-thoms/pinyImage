@@ -43,14 +43,12 @@ def verify_clerk_token(token):
         user_id = request.headers.get('X-User-ID')
         
         if user_email and user_id:
-            logger.info(f"Token verified for user: {user_email}")
             return {'user_id': user_id, 'email': user_email}
         else:
             # Fallback for demo - create a unique user based on token
             import hashlib
             user_hash = hashlib.md5(token.encode()).hexdigest()[:8]
             demo_email = f"user_{user_hash}@demo.com"
-            logger.info(f"Using demo user: {demo_email}")
             return {'user_id': user_hash, 'email': demo_email}
             
     except Exception as e:
@@ -63,20 +61,14 @@ def require_clerk_auth(f):
     def decorated_function(*args, **kwargs):
         try:
             auth_header = request.headers.get('Authorization')
-            logger.info(f"Auth header: {auth_header}")
             
             if not auth_header or not auth_header.startswith('Bearer '):
-                logger.error("No valid authorization header")
                 return jsonify({"error": "Missing or invalid authorization header"}), 401
             
             token = auth_header.split(' ')[1]
-            logger.info(f"Token received: {token[:20]}...")
-            
             user_info = verify_clerk_token(token)
-            logger.info(f"User info: {user_info}")
             
             if not user_info:
-                logger.error("Invalid token")
                 return jsonify({"error": "Invalid token"}), 401
             
             # Add user info to request context
@@ -114,7 +106,6 @@ def contains_chinese_characters(s):
 @app.route('/api/post', methods=["POST"])
 @require_clerk_auth
 def addToDb():
-    logger.info("addToDb called")
     try:
         formData = request.get_json()
         if not formData:
@@ -226,12 +217,10 @@ def getCards():
     try:
         # Get user from Clerk authentication
         clerk_user_info = request.clerk_user
-        logger.info(f"Getting cards for user: {clerk_user_info}")
         
         user = User.query.filter_by(email=clerk_user_info['email']).first()
         
         if not user:
-            logger.info(f"User not found, creating new user: {clerk_user_info['email']}")
             # Create new user
             user = User(
                 username=clerk_user_info['email'].split('@')[0],
@@ -240,12 +229,10 @@ def getCards():
             )
             db.session.add(user)
             db.session.commit()
-            logger.info(f"Created new user: {user.email}")
         
         # Only return cards for this user
         cards = Card.query.filter_by(user_id=user.id).all()
         cards_data = [card.to_dict() for card in cards]
-        logger.info(f"Retrieved {len(cards_data)} cards for user: {user.email}")
         return jsonify(cards_data)
     except Exception as e:
         logger.error(f"Error fetching cards: {e}")

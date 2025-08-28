@@ -50,9 +50,6 @@ const AppContent = () => {
       // Set up axios default headers with Clerk token and user info
       session.getToken()
         .then(token => {
-          console.log('Clerk token obtained successfully');
-          console.log('User info:', user);
-          
           // Set up headers with token and user info
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
           axios.defaults.headers.common['X-User-Email'] = user.emailAddresses[0]?.emailAddress || user.primaryEmailAddress?.emailAddress;
@@ -104,13 +101,11 @@ const AppContent = () => {
   };
 
   const fetchCards = async () => {
-    console.log("fetch cards");
     try {
       const response = await axios.get('/api/cards');
-      console.log("response of fetchCards: ", response);
       setCards(response.data);
     } catch (error) {
-      console.error("error fetching cards: ", error);
+      console.error("Error fetching cards: ", error);
     }
   };
 
@@ -118,14 +113,7 @@ const AppContent = () => {
     return /[\u4e00-\u9fff]/.test(s);
   };
 
-  const removeDuplicates = (cards) => {
-    const uniqueCards = cards.filter((card, index, self) =>
-      index === self.findIndex((c) => (
-        c.character === card.character && c.pinyin === card.pinyin
-      ))
-    );
-    return uniqueCards;
-  };
+
 
   const handleSubmit = async (input) => {
     setSubmitted(true);
@@ -143,9 +131,7 @@ const AppContent = () => {
 
     setResult("");
     try {
-      console.log("hit submit button");
       const response = await axios.post('/api/result', { user_input: input });
-      console.log("response here, ", response);
       setResult(response.data.result);
       setConnections(response.data.connections);
       // DON'T overwrite database cards with AI response cards
@@ -165,12 +151,9 @@ const AppContent = () => {
 
   const addToDatabase = async () => {
     try {
-      console.log("adding to db");
       const response = await axios.post('/api/post', curCard);
-      console.log("response of addtodb: ", response);
 
       if (response.status === 200) {
-        console.log("Card saved successfully");
         // Refresh cards immediately after saving
         await fetchCards();
         setSaved(true);
