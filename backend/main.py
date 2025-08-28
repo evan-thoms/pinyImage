@@ -33,7 +33,15 @@ db.init_app(app)
 
 # Create tables if they don't exist
 with app.app_context():
-    db.create_all()
+    try:
+        db.create_all()
+        logger.info("Database tables created successfully")
+    except Exception as e:
+        logger.error(f"Error creating database tables: {e}")
+        # Fallback to SQLite if PostgreSQL fails
+        logger.info("Falling back to SQLite configuration")
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+        db.create_all()
 
 charinput = ""
 charPinyin = ""
@@ -183,7 +191,8 @@ def health_check():
     """Health check endpoint for monitoring"""
     try:
         # Check database connection
-        db.session.execute('SELECT 1')
+        from sqlalchemy import text
+        db.session.execute(text('SELECT 1'))
         db_status = "healthy"
     except Exception as e:
         logger.error(f"Database health check failed: {e}")
