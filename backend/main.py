@@ -61,19 +61,30 @@ def require_clerk_auth(f):
     """Decorator to require Clerk authentication"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return jsonify({"error": "Missing or invalid authorization header"}), 401
-        
-        token = auth_header.split(' ')[1]
-        user_info = verify_clerk_token(token)
-        
-        if not user_info:
-            return jsonify({"error": "Invalid token"}), 401
-        
-        # Add user info to request context
-        request.clerk_user = user_info
-        return f(*args, **kwargs)
+        try:
+            auth_header = request.headers.get('Authorization')
+            logger.info(f"Auth header: {auth_header}")
+            
+            if not auth_header or not auth_header.startswith('Bearer '):
+                logger.error("No valid authorization header")
+                return jsonify({"error": "Missing or invalid authorization header"}), 401
+            
+            token = auth_header.split(' ')[1]
+            logger.info(f"Token received: {token[:20]}...")
+            
+            user_info = verify_clerk_token(token)
+            logger.info(f"User info: {user_info}")
+            
+            if not user_info:
+                logger.error("Invalid token")
+                return jsonify({"error": "Invalid token"}), 401
+            
+            # Add user info to request context
+            request.clerk_user = user_info
+            return f(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Authentication error: {e}")
+            return jsonify({"error": "Authentication failed"}), 401
     return decorated_function
 
 # Configure database
