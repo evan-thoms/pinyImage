@@ -106,12 +106,12 @@ Be accurate and concise. Only return valid JSON."""
             return None
         
         try:
-            prompt = f"""Create a memorable visual connection for the Chinese character {character} (pronounced "{pinyin}" meaning "{meaning}"). 
+            prompt = f"""You are a creative language learning assistant specializing in creating memorable mnemonics for Chinese characters. Create a memorable visual and auditory connection between the Chinese character {character} and its pronunciation "{pinyin}" and meaning "{meaning}"). 
 
 Focus on:
-1. Visual similarity between the character's strokes and familiar objects
+1. Visual similarity between the character's appearance and familiar objects that could hint at its meaning or sound.
 2. Sound associations with the pinyin pronunciation
-3. Meaning connections that create vivid mental images
+3. Vivid mental images or simple situations that could help the learner remember the characters pronunciation and meaning after seeing it.
 
 Keep it to 2-3 sentences maximum. Make it creative and memorable for language learning."""
 
