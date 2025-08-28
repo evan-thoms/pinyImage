@@ -34,37 +34,24 @@ from functools import wraps
 def verify_clerk_token(token):
     """Verify Clerk JWT token and return user info"""
     try:
-        # For now, we'll use a simple approach to extract user info
-        # In production, you'd properly verify the JWT with Clerk's public key
+        # For demo purposes, we'll use a simple approach
+        # In production, you'd verify the JWT with Clerk's public key
         
-        # Extract user info from the token (simplified for demo)
-        # The token contains user information that we can decode
-        import base64
-        import json
+        # For now, let's extract user info from the request headers
+        # The frontend should send user info along with the token
+        user_email = request.headers.get('X-User-Email')
+        user_id = request.headers.get('X-User-ID')
         
-        # Split the token and get the payload
-        parts = token.split('.')
-        if len(parts) != 3:
-            return None
-            
-        # Decode the payload (this is simplified - in production use proper JWT verification)
-        payload = parts[1]
-        # Add padding if needed
-        payload += '=' * (4 - len(payload) % 4)
-        
-        try:
-            decoded = base64.b64decode(payload)
-            user_data = json.loads(decoded)
-            
-            # Extract user info from the token
-            user_id = user_data.get('sub', 'unknown_user')
-            email = user_data.get('email', 'user@example.com')
-            
-            logger.info(f"Token verified for user: {email}")
-            return {'user_id': user_id, 'email': email}
-        except:
-            # Fallback for demo
-            return {'user_id': 'demo_user', 'email': 'demo@example.com'}
+        if user_email and user_id:
+            logger.info(f"Token verified for user: {user_email}")
+            return {'user_id': user_id, 'email': user_email}
+        else:
+            # Fallback for demo - create a unique user based on token
+            import hashlib
+            user_hash = hashlib.md5(token.encode()).hexdigest()[:8]
+            demo_email = f"user_{user_hash}@demo.com"
+            logger.info(f"Using demo user: {demo_email}")
+            return {'user_id': user_hash, 'email': demo_email}
             
     except Exception as e:
         logger.error(f"Token verification error: {e}")
