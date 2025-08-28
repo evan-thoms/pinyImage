@@ -70,6 +70,9 @@ const AppContent = () => {
       // Clear cards when user logs out
       setCards([]);
       setFilteredCards([]);
+      setResult("");
+      setConnections("");
+      setCurCard(null);
       // Clear headers
       delete axios.defaults.headers.common['Authorization'];
       delete axios.defaults.headers.common['X-User-Email'];
@@ -91,7 +94,13 @@ const AppContent = () => {
   const handleLogout = () => {
     signOut();
     delete axios.defaults.headers.common['Authorization'];
+    delete axios.defaults.headers.common['X-User-Email'];
+    delete axios.defaults.headers.common['X-User-ID'];
     setCards([]);
+    setFilteredCards([]);
+    setResult("");
+    setConnections("");
+    setCurCard(null);
   };
 
   const fetchCards = async () => {
@@ -139,7 +148,8 @@ const AppContent = () => {
       console.log("response here, ", response);
       setResult(response.data.result);
       setConnections(response.data.connections);
-      setCards(removeDuplicates(response.data.cards));
+      // DON'T overwrite database cards with AI response cards
+      // setCards(removeDuplicates(response.data.cards));
       setCurCard({
         title: input,
         pinyin: response.data.pinyin,
