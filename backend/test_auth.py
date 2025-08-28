@@ -7,7 +7,7 @@ import requests
 import json
 
 # Test locally first
-BASE_URL = "http://localhost:5000"
+BASE_URL = "http://localhost:5001"
 
 def test_authentication():
     print("🧪 Testing Authentication Endpoints")

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
+import { ClerkProvider, SignIn, useUser, useAuth, useSession } from '@clerk/clerk-react';
 import './App.css';
 import Navbar from './components/Navbar';
 import CardList from './components/CardList';
@@ -9,8 +10,13 @@ import $ from 'jquery';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'tilt.js';
 import { BrowserRouter as Router } from 'react-router-dom';
+// Environment test removed
 
-const App = () => {
+const AppContent = () => {
+  const { user, isSignedIn } = useUser();
+  const { signOut } = useAuth();
+  const { session } = useSession();
+  
   const [cards, setCards] = useState([]);
   const [result, setResult] = useState('');
   const [connections, setConnections] = useState('');
@@ -40,8 +46,21 @@ const App = () => {
   }, [cards]);
 
   useEffect(() => {
-    fetchCards();
-  }, []);
+    if (isSignedIn && session) {
+      // Set up axios default headers with Clerk token
+      session.getToken()
+        .then(token => {
+          console.log('Clerk token obtained successfully');
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          fetchCards();
+        })
+        .catch(error => {
+          console.error('Error getting Clerk token:', error);
+          // Still try to fetch cards without token for now
+          fetchCards();
+        });
+    }
+  }, [isSignedIn, session]);
 
   const searchFiltering = (searchTerm) => {
     const filteredResult = cards.filter(card =>
@@ -52,6 +71,12 @@ const App = () => {
 
   const handleScroll = (ref) => {
     ref.current.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleLogout = () => {
+    signOut();
+    delete axios.defaults.headers.common['Authorization'];
+    setCards([]);
   };
 
   const fetchCards = async () => {
@@ -130,9 +155,23 @@ const App = () => {
   return (
     <Router>
       <div className="App">
-        <Navbar onClick={handleScroll} aboutRef={aboutRef} searchRef={searchRef} />
-        <h3 className="intro">Create meaningful mental images to remember Mandarin characters forever!</h3>
-        <CardForm className="cardForm" onSubmit={handleSubmit} />
+        {!isSignedIn ? (
+          <div className="auth-container">
+            <div className="auth-card">
+              <div className="auth-header">
+                <h2>Welcome to PinyImage</h2>
+                <p>Sign in to start learning Chinese characters</p>
+              </div>
+              <div className="clerk-wrapper">
+                <SignIn />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <Navbar onClick={handleScroll} aboutRef={aboutRef} searchRef={searchRef} user={user} onLogout={handleLogout} />
+            <h3 className="intro">Create meaningful mental images to remember Mandarin characters forever!</h3>
+            <CardForm className="cardForm" onSubmit={handleSubmit} />
 
         {submitted ? (
           loading ? (
@@ -185,10 +224,52 @@ const App = () => {
             <br /><br />PinyImage leverages your brain's natural ability to recall visual information to enhance and speed up character memorization. Tying character appearance to its meaning and sound using a mental image with familiar objects and feelings will store a character more strongly in your mind, ultimately leading to a better mastery of the Chinese language!
           </div>
         </div>
-        <div className="endBlock"></div>
+            <div className="endBlock"></div>
+          </>
+        )}
       </div>
     </Router>
   );
 }
+
+const App = () => {
+  const clerkPubKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
+  
+  console.log('Clerk key:', clerkPubKey ? 'Found' : 'Missing');
+  
+  if (!clerkPubKey) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        backgroundColor: '#e8e7e3',
+        color: '#333',
+        fontSize: '16px',
+        fontFamily: '"Sawarabi Mincho", serif'
+      }}>
+        <div style={{ 
+          textAlign: 'center',
+          backgroundColor: '#7a8aa0',
+          padding: '30px',
+          borderRadius: '12px',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+        }}>
+          <h2>Configuration Error</h2>
+          <p>Missing Clerk Publishable Key</p>
+          <p>Please add REACT_APP_CLERK_PUBLISHABLE_KEY to your .env file</p>
+          <p>Current key: {clerkPubKey || 'Not found'}</p>
+        </div>
+      </div>
+    );
+  }
+  
+  return (
+    <ClerkProvider publishableKey={clerkPubKey}>
+      <AppContent />
+    </ClerkProvider>
+  );
+};
 
 export default App;
