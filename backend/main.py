@@ -6,11 +6,14 @@ import pinyin
 import requests
 import re
 import json 
-import sqlite3
 import os
-import initdb
 import logging
 from dotenv import load_dotenv
+from datetime import datetime
+
+# Import our new models and config
+from models import db, User, Card
+from config import config
 
 # Load environment variables
 load_dotenv()
@@ -19,11 +22,18 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-initdb.init_db()
-
-
+# Initialize Flask app
 app = Flask(__name__, static_folder='../frontend/build', static_url_path='')
 CORS(app)  # Enable CORS for all routes
+
+# Configure database
+env = os.getenv('FLASK_ENV', 'development')
+app.config.from_object(config[env])
+db.init_app(app)
+
+# Create tables if they don't exist
+with app.app_context():
+    db.create_all()
 
 charinput = ""
 charPinyin = ""
@@ -46,18 +56,35 @@ def addToDb():
             if field not in formData or not formData[field]:
                 return jsonify({"status": "error", "message": f"Missing required field: {field}"}), 400
         
-        connection = getDbConnection()
-        cur = connection.cursor()
-        cur.execute("INSERT INTO cards (title, pinyin, meaning, con) VALUES (?, ?, ?, ?)",
-                    (formData['title'], formData['pinyin'], formData['meaning'], formData['con']))
-        connection.commit()
-        connection.close()
+        # Get default user (for now, we'll implement proper auth later)
+        default_user = User.query.filter_by(username='default_user').first()
+        if not default_user:
+            # Create default user if it doesn't exist
+            default_user = User(
+                username='default_user',
+                email='default@pinyimage.com',
+                password_hash='default_user'
+            )
+            db.session.add(default_user)
+            db.session.commit()
+        
+        # Create new card
+        card = Card(
+            user_id=default_user.id,
+            title=formData['title'],
+            pinyin=formData['pinyin'],
+            meaning=formData['meaning'],
+            con=formData['con']
+        )
+        db.session.add(card)
+        db.session.commit()
         
         logger.info(f"Successfully added card: {formData['title']}")
         return jsonify({"status": "success"}), 200
         
     except Exception as e:
         logger.error(f"Error adding to db: {e}")
+        db.session.rollback()
         return jsonify({"status": "error", "message": "Internal server error"}), 500
 
 @app.route("/api/result", methods=["POST"])
@@ -73,9 +100,7 @@ def result():
             return jsonify({"error": "Empty input provided"}), 400
         
         # Get existing cards
-        conn = getDbConnection()
-        cards = conn.execute('SELECT * from cards').fetchall()
-        conn.close()
+        cards = Card.query.all()
         
         if contains_chinese_characters(uinput):
             try:
@@ -88,7 +113,7 @@ def result():
                     "meaning": info[2], 
                     "connections": connections, 
                     "pinyin": charPinyin, 
-                    "cards": [dict(card) for card in cards]
+                    "cards": [card.to_dict() for card in cards]
                 })
             except Exception as e:
                 logger.error(f"Error processing character {uinput}: {e}")
@@ -103,19 +128,19 @@ def result():
                         "meaning": "character",
                         "connections": connections,
                         "pinyin": charPinyin,
-                        "cards": [dict(card) for card in cards]
+                        "cards": [card.to_dict() for card in cards]
                     })
                 except Exception as fallback_error:
                     logger.error(f"Fallback also failed: {fallback_error}")
                     return jsonify({
                         "error": "Unable to process character. Please try again later.",
-                        "cards": [dict(card) for card in cards]
+                        "cards": [card.to_dict() for card in cards]
                     }), 500
         else:
             return jsonify({
                 "result": "The input does not contain any Chinese characters.",
                 "connections": "",
-                "cards": [dict(card) for card in cards]
+                "cards": [card.to_dict() for card in cards]
             })
             
     except Exception as e:
@@ -125,13 +150,74 @@ def result():
 @app.route('/api/cards')
 def getCards():
     try:
-        conn = getDbConnection()
-        cards = conn.execute('SELECT * from cards').fetchall()
-        conn.close()
-        return jsonify([dict(card) for card in cards])
+        cards = Card.query.all()
+        return jsonify([card.to_dict() for card in cards])
     except Exception as e:
         logger.error(f"Error fetching cards: {e}")
         return jsonify({"error": "Unable to fetch cards"}), 500
+
+@app.route('/api/status')
+def getStatus():
+    """Get system status including AI service availability"""
+    try:
+        from ai_service import AIService
+        from character_data_service import CharacterDataService
+        
+        ai_service = AIService()
+        char_service = CharacterDataService()
+        
+        return jsonify({
+            "ai_services": ai_service.get_available_services(),
+            "ai_available": ai_service.is_available(),
+            "character_service_available": char_service.is_available(),
+            "database": "postgresql" if "postgresql" in app.config['SQLALCHEMY_DATABASE_URI'] else "sqlite",
+            "environment": os.getenv("FLASK_ENV", "development"),
+            "timestamp": datetime.utcnow().isoformat()
+        })
+    except Exception as e:
+        logger.error(f"Error getting status: {e}")
+        return jsonify({"error": "Unable to get status"}), 500
+
+@app.route('/api/health')
+def health_check():
+    """Health check endpoint for monitoring"""
+    try:
+        # Check database connection
+        db.session.execute('SELECT 1')
+        db_status = "healthy"
+    except Exception as e:
+        logger.error(f"Database health check failed: {e}")
+        db_status = "unhealthy"
+    
+    # Check AI service
+    try:
+        from ai_service import AIService
+        ai_service = AIService()
+        ai_status = "healthy" if ai_service.is_available() else "unhealthy"
+    except Exception as e:
+        logger.error(f"AI service health check failed: {e}")
+        ai_status = "unhealthy"
+    
+    # Check character service
+    try:
+        from character_data_service import CharacterDataService
+        char_service = CharacterDataService()
+        char_status = "healthy" if char_service.is_available() else "unhealthy"
+    except Exception as e:
+        logger.error(f"Character service health check failed: {e}")
+        char_status = "unhealthy"
+    
+    overall_status = "healthy" if all([db_status == "healthy", ai_status == "healthy"]) else "degraded"
+    
+    return jsonify({
+        "status": overall_status,
+        "services": {
+            "database": db_status,
+            "ai_service": ai_status,
+            "character_service": char_status
+        },
+        "timestamp": datetime.utcnow().isoformat()
+    })
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
@@ -147,38 +233,30 @@ def getCharInfo(uinput):
     logger.info(f"Getting character info for: {uinput}")
     
     try:
-        url = f"http://ccdb.hemiola.com/characters/string/{uinput}?fields=kDefinition,kMandarin,kRSKangXi"
-        response = requests.get(url, headers={"User-Agent": "XY"}, timeout=10)
-        response.raise_for_status()
+        from character_data_service import CharacterDataService
+        char_service = CharacterDataService()
         
-        data = response.json()
-        if not data:
-            raise ValueError("No character data found")
+        # Get character info with fallbacks
+        char_info = char_service.get_character_info(uinput)
+        if not char_info:
+            raise ValueError("Unable to get character information")
         
-        definition = data[0]['kDefinition']
-        radNum = data[0]["kRSKangXi"]
-        radNum = radNum.split('.')[0]
         charPinyin = pinyin.get(uinput)
         
-        rad = getRads(radNum)
-        if not rad:
-            raise ValueError("Radical not found")
-            
-        radChar = rad['radical'].strip()
-        english = rad['english']
-        radNum = str(radNum)
+        return (
+            uinput,
+            charPinyin,
+            char_info['definition'],
+            char_info['radical_number'],
+            char_info['radical_character'],
+            char_info['radical_meaning']
+        )
         
-        return uinput, charPinyin, definition, radNum, radChar.strip(), english
-        
-    except requests.RequestException as e:
-        logger.error(f"Network error getting character info: {e}")
-        raise
-    except (KeyError, IndexError) as e:
-        logger.error(f"Data parsing error: {e}")
-        raise
     except Exception as e:
-        logger.error(f"Unexpected error getting character info: {e}")
-        raise
+        logger.error(f"Error getting character info for {uinput}: {e}")
+        # Fallback to basic info
+        charPinyin = pinyin.get(uinput)
+        return uinput, charPinyin, "character", "1", uinput, "basic character"
 
 def getRads(radNumC):
     logger.info(f"Getting radical info for number: {radNumC}")
@@ -202,14 +280,7 @@ def getRads(radNumC):
         logger.error(f"Error reading radical data: {e}")
         raise
 
-def getDbConnection():
-    try:
-        conn = sqlite3.connect("database.db")
-        conn.row_factory = sqlite3.Row
-        return conn
-    except Exception as e:
-        logger.error(f"Database connection error: {e}")
-        raise
+# SQLite functions removed - using SQLAlchemy now
 
 def get_card(card_id):
     conn = getDbConnection()

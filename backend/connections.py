@@ -1,14 +1,11 @@
-from ai_service import AIService
+from openai_service import OpenAIService
 import logging
 
 logger = logging.getLogger(__name__)
 
-# Initialize AI service
-ai_service = AIService()
-
 def getConnections(character, pinyin, meaning=""):
     """
-    Generate mnemonic connections for a Chinese character using AI.
+    Generate mnemonic connections for a Chinese character using OpenAI.
     
     Args:
         character: The Chinese character
@@ -21,10 +18,13 @@ def getConnections(character, pinyin, meaning=""):
     try:
         logger.info(f"Generating connections for character: {character}, pinyin: {pinyin}")
         
-        if not ai_service.is_available():
-            return "AI service is currently unavailable. Please try again later."
+        # Use OpenAI service
+        openai_service = OpenAIService()
         
-        result = ai_service.generate_mnemonic(character, pinyin, meaning)
+        if not openai_service.is_available():
+            return "OpenAI service is currently unavailable. Please try again later."
+        
+        result = openai_service.generate_mnemonic(character, pinyin, meaning)
         
         if result:
             return result
