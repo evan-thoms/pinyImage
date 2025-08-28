@@ -46,12 +46,18 @@ const AppContent = () => {
   }, [cards]);
 
   useEffect(() => {
-    if (isSignedIn && session) {
-      // Set up axios default headers with Clerk token
+    if (isSignedIn && user && session) {
+      // Set up axios default headers with Clerk token and user info
       session.getToken()
         .then(token => {
           console.log('Clerk token obtained successfully');
+          console.log('User info:', user);
+          
+          // Set up headers with token and user info
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          axios.defaults.headers.common['X-User-Email'] = user.emailAddresses[0]?.emailAddress || user.primaryEmailAddress?.emailAddress;
+          axios.defaults.headers.common['X-User-ID'] = user.id;
+          
           // Fetch cards immediately after getting token
           fetchCards();
         })
@@ -64,8 +70,12 @@ const AppContent = () => {
       // Clear cards when user logs out
       setCards([]);
       setFilteredCards([]);
+      // Clear headers
+      delete axios.defaults.headers.common['Authorization'];
+      delete axios.defaults.headers.common['X-User-Email'];
+      delete axios.defaults.headers.common['X-User-ID'];
     }
-  }, [isSignedIn, session]);
+  }, [isSignedIn, user, session]);
 
   const searchFiltering = (searchTerm) => {
     const filteredResult = cards.filter(card =>
