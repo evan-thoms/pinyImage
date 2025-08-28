@@ -32,27 +32,37 @@ class CharacterDataService:
         try:
             from openai_service import OpenAIService
             openai_service = OpenAIService()
+            logger.info(f"Testing OpenAI availability for {character}")
+            
             if openai_service.is_available():
+                logger.info(f"OpenAI is available, getting character info for {character}")
                 result = openai_service.get_character_info(character)
-                if result:
-                    logger.info(f"OpenAI provided character info for {character}")
+                if result and result.get('meaning') != 'character':
+                    logger.info(f"OpenAI provided character info for {character}: {result.get('meaning')}")
                     return result
+                else:
+                    logger.warning(f"OpenAI returned fallback meaning for {character}")
+            else:
+                logger.warning(f"OpenAI is not available for {character}")
         except Exception as e:
             logger.warning(f"OpenAI failed for {character}: {e}")
         
         # Fallback to CCDB
         try:
+            logger.info(f"Trying CCDB for {character}")
             return self._get_from_ccdb(character)
         except Exception as e:
             logger.warning(f"CCDB failed for {character}: {e}")
         
         # Fallback to local data
         try:
+            logger.info(f"Trying local data for {character}")
             return self._get_from_local_data(character)
         except Exception as e:
             logger.error(f"Local data failed for {character}: {e}")
         
         # Final fallback - basic info
+        logger.info(f"Using basic info fallback for {character}")
         return self._get_basic_info(character)
     
     def _get_from_ccdb(self, character: str) -> Dict[str, Any]:

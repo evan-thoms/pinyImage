@@ -61,11 +61,21 @@ class Card(db.Model):
     
     def to_dict(self):
         """Convert card to dictionary for JSON response"""
+        from datetime import datetime
+        
+        # Format datetime for better display
+        if self.created_at:
+            # Format as "Aug 28, 3:45 PM" or similar
+            created_display = self.created_at.strftime("%b %d, %I:%M %p")
+        else:
+            created_display = None
+            
         return {
             'id': self.id,
             'title': self.title,
             'pinyin': self.pinyin,
             'meaning': self.meaning,
             'con': self.con,
-            'created': self.created_at.isoformat() if self.created_at else None
+            'created': self.created_at.isoformat() if self.created_at else None,
+            'created_display': created_display
         }

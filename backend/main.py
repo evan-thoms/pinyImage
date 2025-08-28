@@ -168,30 +168,48 @@ def result():
         
         if contains_chinese_characters(uinput):
             try:
-                info = getCharInfo(uinput)
-                result = f"\nYour character {uinput} is pronounced {info[1]} and means {info[2]}. \nYour character uses radical #{info[3]}: {info[4]}, which means {info[5]}."
-                connections = getConnections(charinput, charPinyin, info[2])
+                # Get character info using the service
+                from character_data_service import CharacterDataService
+                char_service = CharacterDataService()
+                char_info = char_service.get_character_info(uinput)
+                
+                if char_info and char_info.get('meaning') != 'character':
+                    # Use the actual meaning from the service
+                    meaning = char_info.get('meaning', 'character')
+                    pinyin_result = char_info.get('pinyin', pinyin.get(uinput))
+                    radical_info = f"Radical: {char_info.get('radical', '')} ({char_info.get('radical_meaning', '')})"
+                    
+                    result = f"\nYour character {uinput} is pronounced {pinyin_result} and means '{meaning}'. \n{radical_info}."
+                    
+                    # Generate connections using the actual meaning
+                    connections = getConnections(uinput, pinyin_result, meaning)
+                else:
+                    # Fallback to basic info
+                    pinyin_result = pinyin.get(uinput)
+                    result = f"\nYour character {uinput} is pronounced {pinyin_result}."
+                    connections = getConnections(uinput, pinyin_result, "character")
+                    meaning = "character"
                 
                 return jsonify({
                     "result": result, 
-                    "meaning": info[2], 
+                    "meaning": meaning, 
                     "connections": connections, 
-                    "pinyin": charPinyin, 
+                    "pinyin": pinyin_result, 
                     "cards": [card.to_dict() for card in cards]
                 })
             except Exception as e:
                 logger.error(f"Error processing character {uinput}: {e}")
                 # Fallback: provide basic info without external API
                 try:
-                    charPinyin = pinyin.get(uinput)
-                    connections = getConnections(uinput, charPinyin, "character")
-                    result = f"\nYour character {uinput} is pronounced {charPinyin}."
+                    pinyin_result = pinyin.get(uinput)
+                    connections = getConnections(uinput, pinyin_result, "character")
+                    result = f"\nYour character {uinput} is pronounced {pinyin_result}."
                     
                     return jsonify({
                         "result": result,
                         "meaning": "character",
                         "connections": connections,
-                        "pinyin": charPinyin,
+                        "pinyin": pinyin_result,
                         "cards": [card.to_dict() for card in cards]
                     })
                 except Exception as fallback_error:

@@ -1,9 +1,29 @@
 import React, { useRef } from 'react';
 import './Card.css'
 
-const Card = ({ title, pinyin, meaning, con, created }) => {
+const Card = ({ title, pinyin, meaning, con, created, created_display }) => {
     const tiltRef = useRef(null);
-    console.log("LOOK HERE", {title}, {pinyin}, {meaning}, {con}, {created})
+    
+    // Use the formatted display date if available, otherwise format the ISO date
+    const formatDate = (isoDate, displayDate) => {
+        if (displayDate) return displayDate;
+        if (isoDate) {
+            try {
+                const date = new Date(isoDate);
+                return date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                });
+            } catch (e) {
+                return isoDate;
+            }
+        }
+        return 'Unknown date';
+    };
+    
     return(
         <div data-tilt>
             <div ref={tiltRef} className = "cards">
@@ -17,7 +37,7 @@ const Card = ({ title, pinyin, meaning, con, created }) => {
                     </div>
                 </div>
             <p class="conn">{con}</p>
-            <span className="badge badge-primary">Added on: {created}</span>
+            <span className="badge badge-primary">Added: {formatDate(created, created_display)}</span>
             </div>
         </div>
     );
