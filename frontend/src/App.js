@@ -52,6 +52,7 @@ const AppContent = () => {
         .then(token => {
           console.log('Clerk token obtained successfully');
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          // Fetch cards immediately after getting token
           fetchCards();
         })
         .catch(error => {
@@ -59,6 +60,10 @@ const AppContent = () => {
           // Still try to fetch cards without token for now
           fetchCards();
         });
+    } else {
+      // Clear cards when user logs out
+      setCards([]);
+      setFilteredCards([]);
     }
   }, [isSignedIn, session]);
 
@@ -144,11 +149,17 @@ const AppContent = () => {
       const response = await axios.post('/api/post', curCard);
       console.log("response of addtodb: ", response);
 
-      fetchCards();
-      setSaved(true);
+      if (response.status === 200) {
+        console.log("Card saved successfully");
+        // Refresh cards immediately after saving
+        await fetchCards();
+        setSaved(true);
+      }
       // Do not reset validChar or any other states affecting the response display
     } catch (error) {
       console.error("Error adding to db: ", error);
+      // Show error to user
+      alert("Failed to save card. Please try again.");
     }
   };
 

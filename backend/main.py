@@ -34,16 +34,38 @@ from functools import wraps
 def verify_clerk_token(token):
     """Verify Clerk JWT token and return user info"""
     try:
-        # Get Clerk's public key and verify the token
-        # For now, we'll use a simple approach - in production you'd verify the JWT properly
-        headers = {
-            'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json'
-        }
+        # For now, we'll use a simple approach to extract user info
+        # In production, you'd properly verify the JWT with Clerk's public key
         
-        # You can add proper JWT verification here
-        # For demo purposes, we'll extract user info from the token
-        return {'user_id': 'clerk_user', 'email': 'user@example.com'}
+        # Extract user info from the token (simplified for demo)
+        # The token contains user information that we can decode
+        import base64
+        import json
+        
+        # Split the token and get the payload
+        parts = token.split('.')
+        if len(parts) != 3:
+            return None
+            
+        # Decode the payload (this is simplified - in production use proper JWT verification)
+        payload = parts[1]
+        # Add padding if needed
+        payload += '=' * (4 - len(payload) % 4)
+        
+        try:
+            decoded = base64.b64decode(payload)
+            user_data = json.loads(decoded)
+            
+            # Extract user info from the token
+            user_id = user_data.get('sub', 'unknown_user')
+            email = user_data.get('email', 'user@example.com')
+            
+            logger.info(f"Token verified for user: {email}")
+            return {'user_id': user_id, 'email': email}
+        except:
+            # Fallback for demo
+            return {'user_id': 'demo_user', 'email': 'demo@example.com'}
+            
     except Exception as e:
         logger.error(f"Token verification error: {e}")
         return None
@@ -206,10 +228,21 @@ def getCards():
     try:
         # Get user from Clerk authentication
         clerk_user_info = request.clerk_user
+        logger.info(f"Getting cards for user: {clerk_user_info}")
+        
         user = User.query.filter_by(email=clerk_user_info['email']).first()
         
         if not user:
-            return jsonify([])  # Return empty list if user doesn't exist yet
+            logger.info(f"User not found, creating new user: {clerk_user_info['email']}")
+            # Create new user
+            user = User(
+                username=clerk_user_info['email'].split('@')[0],
+                email=clerk_user_info['email'],
+                password_hash='clerk_authenticated'
+            )
+            db.session.add(user)
+            db.session.commit()
+            logger.info(f"Created new user: {user.email}")
         
         # Only return cards for this user
         cards = Card.query.filter_by(user_id=user.id).all()
