@@ -15,11 +15,45 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
+    # Learning progress fields
+    total_study_time = db.Column(db.Integer, default=0)  # in minutes
+    streak_days = db.Column(db.Integer, default=0)
+    last_study_date = db.Column(db.DateTime)
+    study_goal = db.Column(db.Integer, default=10)  # daily goal in minutes
+    
+    # Authentication fields
+    is_active = db.Column(db.Boolean, default=True)
+    last_login = db.Column(db.DateTime)
+    
     # Relationship
     cards = db.relationship('Card', back_populates='user', cascade='all, delete-orphan')
     
     def __repr__(self):
         return f'<User {self.username}>'
+    
+    def set_password(self, password):
+        """Hash password and store it"""
+        import bcrypt
+        salt = bcrypt.gensalt()
+        self.password_hash = bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
+    
+    def check_password(self, password):
+        """Check if password matches hash"""
+        import bcrypt
+        return bcrypt.checkpw(password.encode('utf-8'), self.password_hash.encode('utf-8'))
+    
+    def to_dict(self):
+        """Convert user to dictionary for JSON response"""
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'total_study_time': self.total_study_time,
+            'streak_days': self.streak_days,
+            'study_goal': self.study_goal,
+            'last_study_date': self.last_study_date.isoformat() if self.last_study_date else None
+        }
 
 class Card(db.Model):
     __tablename__ = 'cards'

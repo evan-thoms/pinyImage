@@ -1,5 +1,6 @@
 from flask import Flask, request, send_from_directory, jsonify
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from connections import getConnections
 from werkzeug.exceptions import abort
 import pinyin
@@ -9,7 +10,7 @@ import json
 import os
 import logging
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Import our new models and config
 from models import db, User, Card
@@ -25,6 +26,11 @@ logger = logging.getLogger(__name__)
 # Initialize Flask app
 app = Flask(__name__, static_folder='../frontend/build', static_url_path='')
 CORS(app)  # Enable CORS for all routes
+
+# Configure JWT
+app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-change-this')
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
+jwt = JWTManager(app)
 
 # Configure database
 env = os.getenv('FLASK_ENV', 'development')
@@ -288,6 +294,134 @@ def getRads(radNumC):
     except (ValueError, FileNotFoundError, json.JSONDecodeError) as e:
         logger.error(f"Error reading radical data: {e}")
         raise
+
+# Authentication endpoints
+@app.route('/api/register', methods=['POST'])
+def register():
+    """Register a new user"""
+    try:
+        data = request.get_json()
+        
+        if not data or not all(k in data for k in ['username', 'email', 'password']):
+            return jsonify({"error": "Missing required fields"}), 400
+        
+        # Check if user already exists
+        if User.query.filter_by(username=data['username']).first():
+            return jsonify({"error": "Username already exists"}), 400
+        
+        if User.query.filter_by(email=data['email']).first():
+            return jsonify({"error": "Email already exists"}), 400
+        
+        # Create new user
+        user = User(
+            username=data['username'],
+            email=data['email']
+        )
+        user.set_password(data['password'])
+        
+        db.session.add(user)
+        db.session.commit()
+        
+        # Create access token
+        access_token = create_access_token(identity=user.id)
+        
+        return jsonify({
+            "message": "User registered successfully",
+            "access_token": access_token,
+            "user": user.to_dict()
+        }), 201
+        
+    except Exception as e:
+        logger.error(f"Registration error: {e}")
+        db.session.rollback()
+        return jsonify({"error": "Registration failed"}), 500
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    """Login user"""
+    try:
+        data = request.get_json()
+        
+        if not data or not all(k in data for k in ['username', 'password']):
+            return jsonify({"error": "Missing username or password"}), 400
+        
+        # Find user by username
+        user = User.query.filter_by(username=data['username']).first()
+        
+        if not user or not user.check_password(data['password']):
+            return jsonify({"error": "Invalid username or password"}), 401
+        
+        # Update last login
+        user.last_login = datetime.utcnow()
+        db.session.commit()
+        
+        # Create access token
+        access_token = create_access_token(identity=user.id)
+        
+        return jsonify({
+            "message": "Login successful",
+            "access_token": access_token,
+            "user": user.to_dict()
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Login error: {e}")
+        return jsonify({"error": "Login failed"}), 500
+
+@app.route('/api/profile', methods=['GET'])
+@jwt_required()
+def get_profile():
+    """Get current user profile"""
+    try:
+        user_id = get_jwt_identity()
+        user = User.query.get(user_id)
+        
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        
+        return jsonify({
+            "user": user.to_dict()
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Profile error: {e}")
+        return jsonify({"error": "Failed to get profile"}), 500
+
+@app.route('/api/profile', methods=['PUT'])
+@jwt_required()
+def update_profile():
+    """Update user profile"""
+    try:
+        user_id = get_jwt_identity()
+        user = User.query.get(user_id)
+        
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        
+        data = request.get_json()
+        
+        if 'study_goal' in data:
+            user.study_goal = data['study_goal']
+        
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Profile updated successfully",
+            "user": user.to_dict()
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Profile update error: {e}")
+        db.session.rollback()
+        return jsonify({"error": "Failed to update profile"}), 500
+
+# Protected route decorator for existing endpoints
+def require_auth(f):
+    """Decorator to require authentication for endpoints"""
+    @jwt_required()
+    def decorated_function(*args, **kwargs):
+        return f(*args, **kwargs)
+    return decorated_function
 
 # SQLite functions removed - using SQLAlchemy now
 
